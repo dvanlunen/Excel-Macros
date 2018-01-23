@@ -1,0 +1,76 @@
+Sub AlternateRowShade()
+'
+' This macro is used with datasets the begin with a few columns that identify groups
+' The user identifies how many columns define a group
+' Then groups are alternatingly highlighted to help visually separate them
+'
+Dim Start As Range
+Dim FirstCol As Range
+Dim AddedCol As Range
+Dim TableBody As Range
+Dim myValue As Variant
+Dim Cols2Compare As Integer
+Dim NumberAsString As String
+Dim cond As String
+Dim Forml As String
+Dim i As Integer
+
+'Ask for user input
+NumberAsString = InputBox(Prompt:="Enter the number of columns to compare", _
+Title:="Number needed", Default:="Enter number here")
+
+'Validate user input
+If Not IsNumeric(NumberAsString) Then
+MsgBox "You can only enter a number in this field"
+Exit Sub
+ElseIf Val(NumberAsString) < 1 Or Round(Val(NumberAsString)) <> Val(NumberAsString) Then
+MsgBox "You can only enter a positive number of columns"
+Else
+Cols2Compare = Val(NumberAsString)
+End If
+
+
+
+
+'Identify where the table is
+Set Start = Selection
+Set FirstCol = Range(Start, Start.End(xlDown))
+Set TableBody = Range(Start, ActiveCell.SpecialCells(xlLastCell))
+Start.EntireColumn.Insert
+Set AddedCol = FirstCol.Offset(0, -1)
+
+Start.Offset(-1, -1).Value = "1"
+
+
+'Build condition string AND statement
+cond = "RC[1]=R[-1]C[1]"
+If Cols2Compare > 1 Then
+For i = 2 To Cols2Compare
+    cond = cond & ",RC[" & _
+    CStr(i) & _
+    "]=R[-1]C[" & _
+    CStr(i) & _
+    "]"
+Next i
+End If
+
+'Apply the condition to the added row
+AddedCol.FormulaR1C1 = "=IF(AND(" & cond & "),R[-1]C,-1*R[-1]C)"
+
+'Set up the formula for coniditional formatting
+Forml = "=" & Start.Offset(0, -1).Address(False, True) & "=1"
+
+'Conditionally Format
+TableBody.FormatConditions.Add Type:=xlExpression, Formula1:=Forml
+With TableBody.FormatConditions(1).Interior
+    .PatternColorIndex = xlAutomatic
+    .ThemeColor = xlThemeColorAccent1
+    .TintAndShade = 0.799981688894314
+End With
+TableBody.FormatConditions(1).StopIfTrue = False
+
+'Hide the added column
+AddedCol.EntireColumn.Font.Color = RGB(255, 255, 255)
+AddedCol.EntireColumn.Hidden = True
+
+End Sub

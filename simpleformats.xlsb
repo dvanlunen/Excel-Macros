@@ -1,0 +1,17 @@
+'Format dollars rounded to the nearest dollar with commas
+Sub CurrencyFormat()
+    Selection.NumberFormat = "$#,##0"
+    With Selection
+        .HorizontalAlignment = xlRight
+        .VerticalAlignment = xlCenter
+    End With
+End Sub
+
+'Format numbers rounded to the integer with commas
+Sub commaformat()
+    With Selection
+        .HorizontalAlignment = xlRight
+        .VerticalAlignment = xlCenter
+    End With
+    Selection.NumberFormat = "#,##0"
+End Sub
