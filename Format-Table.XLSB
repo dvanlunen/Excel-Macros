@@ -1,0 +1,94 @@
+Sub TableFormat()
+' Starting in the top left of a table
+'    run this macro to format the table
+
+
+
+Dim Start As Range
+Dim TopRow As Range
+Dim TableBody As Range
+
+'Identify where the table is
+Set Start = Selection
+Set TopRow = Range(Start, Start.End(xlToRight))
+Set TableBody = Range(Start.Offset(1, 0), ActiveCell.SpecialCells(xlLastCell))
+
+    'Change Font and Size of the whole sheet
+    With Cells.Font
+        .Name = "Arial"
+        .Size = 10
+    End With
+
+    'Change the formatting of the Top Row
+    TopRow.Font.Bold = True
+    With TopRow.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With TopRow.Borders(xlEdgeBottom)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlMedium
+    End With
+    With TopRow
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = True
+    End With
+
+    'Change the formatting of the body of the table
+    With TableBody.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlMedium
+    End With
+    With TableBody.Borders(xlEdgeBottom)
+        .LineStyle = xlDouble
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThick
+    End With
+    With TableBody.Borders(xlInsideHorizontal)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlHairline
+    End With
+
+
+    'Center all cells
+    Cells.VerticalAlignment = xlCenter
+
+    'Add filters to the headers
+    ActiveSheet.AutoFilterMode = False
+    Range(Start, ActiveCell.SpecialCells(xlLastCell)).AutoFilter
+
+    'Add rows above the table
+    Start.EntireRow.Insert
+    Start.EntireRow.Insert
+    Start.EntireRow.Insert
+
+    'Autofit the column width
+    Cells.EntireColumn.AutoFit
+
+
+    'Add Freezepanes so the Header sticks on scroll
+    Start.Offset(1, 0).Select
+    ActiveWindow.FreezePanes = True
+
+    'Add text to indicate a title can be added
+    Start.Offset(-3, 0).Value = "Title"
+    With Start.Offset(-3, 0).Font
+        .Name = "Arial"
+        .Size = 12
+        .Bold = True
+    End With
+
+    'Change the zoom and get rid of gridlines
+    ActiveWindow.Zoom = 80
+    ActiveWindow.DisplayGridlines = False
+End Sub
